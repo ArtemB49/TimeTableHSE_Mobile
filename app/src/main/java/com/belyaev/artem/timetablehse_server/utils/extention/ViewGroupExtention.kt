@@ -1,4 +1,4 @@
-package com.belyaev.artem.timetablehse_server.utils
+package com.belyaev.artem.timetablehse_server.utils.extention
 
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater

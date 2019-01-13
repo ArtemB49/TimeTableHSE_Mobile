@@ -31,7 +31,7 @@ class MainActivity : ListActivity() {
 
 
         val okHttpHandler = OkHttpHandler()
-        okHttpHandler.execute("http://192.168.88.1:1515/api/classies/1")
+        okHttpHandler.execute("http://192.168.100.9:1515/api/classies/1")
 
 
     }

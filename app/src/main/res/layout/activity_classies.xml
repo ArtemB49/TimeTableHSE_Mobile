@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".controller.ExerciseActivity">
+
+
+
+
+    <TextView
+            android:id="@+id/exercise_lesson"
+            android:layout_below="@id/ll_base_info_purchase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="Занятие"
+            android:gravity="center_horizontal|center_vertical"
+    />
+
+    <LinearLayout
+            android:id="@+id/ll_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:text="Дата"
+                android:layout_marginStart="15dp"/>
+
+        <TextView
+                android:id="@+id/exercise_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="20sp"
+                android:gravity="end"
+                android:text="09.09.2009"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/ll_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:text="Время"
+                android:layout_marginStart="15dp"/>
+
+        <TextView
+                android:id="@+id/exercise_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="20sp"
+                android:gravity="end"
+                android:text="10:20"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/ll_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:text="Преподаватель:"
+                android:layout_marginStart="15dp"/>
+
+        <TextView
+                android:id="@+id/exercise_teacher"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="20sp"
+                android:layout_marginEnd="15dp"
+                android:gravity="center_horizontal|center_vertical|end"
+                android:text="Суслонова Л.Н."/>
+
+    </LinearLayout>
+
+</LinearLayout>

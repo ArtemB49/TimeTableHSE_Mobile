@@ -28,7 +28,7 @@ class ClassiesRecyclerViewHolder (itemView: View):
         itemView.setOnClickListener(this)
         mContext = itemView.context
         moreInformationView = itemView.findViewById(R.id.ll_more_info_purchase)
-        baseSumTextView = itemView.findViewById(R.id.tv_base_sum)
+        baseSumTextView = itemView.findViewById(R.id.item_base_lesson)
     }
 
     override fun onClick(v: View?) {
@@ -37,10 +37,13 @@ class ClassiesRecyclerViewHolder (itemView: View):
     }
 
     fun bindData(classParcelable: ClassParcelable){
-        mainView.item_tv_date.text =
-                SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(classParcelable.date)
+
+        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()).parse(classParcelable.date)
+
+        mainView.item_tv_date.text = SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(date)
         mainView.item_tv_time.text = classParcelable.time
-        mainView.item_tv_lesson.text = classParcelable.lesson
+        mainView.item_base_lesson.text = classParcelable.lesson
+        mainView.item_extra_lesson.text = classParcelable.lesson
         mainView.item_tv_teacher.text = classParcelable.teacher
 
     }

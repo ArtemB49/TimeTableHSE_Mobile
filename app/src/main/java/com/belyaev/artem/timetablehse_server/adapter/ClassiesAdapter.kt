@@ -48,7 +48,7 @@ class ClassiesAdapter(private val activity: Activity, classList: List<ClassParce
         val lessonLabel: TextView = vi.findViewById(R.id.lesson)
         val teacherLabel: TextView = vi.findViewById(R.id.teacher)
 
-        val date: LocalDate = LocalDate(classiesList[i].date)
+        //val date: LocalDate = LocalDate(classiesList[i].date)
 
         dateLabel.text = classiesList[i].date
         timeLabel.text = classiesList[i].time

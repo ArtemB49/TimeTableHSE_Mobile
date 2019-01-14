@@ -5,61 +5,59 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".controller.ExerciseActivity">
-
-
-
+        tools:context=".controller.teacher_tab_activity.TeacherInfoFragment"
+        android:orientation="vertical">
 
     <TextView
-            android:id="@+id/exercise_lesson"
+            android:id="@+id/teacher_name"
+            android:layout_below="@id/ll_base_info_purchase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="30sp"
             android:gravity="center_horizontal|center_vertical"
             android:layout_margin="5dp"
-            android:text="Занятие"
+            android:text="Имя"
     />
 
     <LinearLayout
-            android:id="@+id/ll_date"
+            android:id="@+id/ll_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_margin="5dp">
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:textSize="20sp"
-                android:text="Дата"
+                android:text="E-mail"
                 android:layout_marginStart="15dp"/>
 
         <TextView
-                android:id="@+id/exercise_date"
+                android:id="@+id/teacher_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="20sp"
                 android:gravity="end"
-                android:text="09.09.2009"/>
+                android:text="emaple@ya.ru"/>
 
     </LinearLayout>
 
     <LinearLayout
-            android:id="@+id/ll_time"
+            android:id="@+id/ll_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_margin="5dp">
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:textSize="20sp"
-                android:text="Время"
+                android:text="Телефон"
                 android:layout_marginStart="15dp"/>
 
         <TextView
@@ -69,34 +67,7 @@
                 android:layout_weight="1"
                 android:textSize="20sp"
                 android:gravity="end"
-                android:text="10:20"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/ll_teacher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="vertical">
-
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textSize="20sp"
-                android:text="Преподаватель:"
-                android:layout_marginStart="15dp"/>
-
-        <TextView
-                android:id="@+id/exercise_teacher"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textSize="20sp"
-                android:layout_marginEnd="15dp"
-                android:gravity="center_horizontal|center_vertical|end"
-                android:text="Суслонова Л.Н."/>
+                android:text="8-919-789-45-61"/>
 
     </LinearLayout>
 
@@ -105,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_margin="5dp"
-            android:text="Установить отметку об отсутствии"
+            android:text="Занятия преподавателя"
     />
 
 </LinearLayout>

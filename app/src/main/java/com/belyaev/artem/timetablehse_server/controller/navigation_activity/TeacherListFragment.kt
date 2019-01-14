@@ -1,4 +1,4 @@
-package com.belyaev.artem.timetablehse_server.controller.fragment
+package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,10 +16,8 @@ import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.WebService
 import com.belyaev.artem.timetablehse_server.adapter.TeacherRecyclerViewAdapter
 
-import com.belyaev.artem.timetablehse_server.controller.fragment.dummy.DummyContent.DummyItem
-import com.belyaev.artem.timetablehse_server.model.ClassParcelable
-import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
+import com.belyaev.artem.timetablehse_server.utils.Constants
 import java.util.ArrayList
 
 /**
@@ -101,7 +99,7 @@ class TeacherListFragment : Fragment() {
     private val broadcastReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("FUN","TeacherListFragment.broadcastReceiver.onReceive")
-            val teachersList = intent?.getParcelableArrayListExtra<TeacherParcelable>("list")
+            val teachersList = intent?.getParcelableArrayListExtra<TeacherParcelable>("TEACHERS_LIST")
 
 
             if (teachersList != null) {
@@ -115,7 +113,7 @@ class TeacherListFragment : Fragment() {
     private fun initList(completion: (ArrayList<TeacherParcelable>) -> Unit) {
 
 
-        requestToAsy()
+        requestToServer()
 
     }
 
@@ -130,10 +128,10 @@ class TeacherListFragment : Fragment() {
 
     }
 
-    private fun requestToAsy(){
+    private fun requestToServer(){
 
         val intent = Intent(activity,  WebService::class.java)
-        intent.putExtra("url", "http://192.168.100.9:1515/api/teachers")
+        intent.putExtra("url", Constants.SERVICE_HOST.value + "api/teachers")
         intent.putExtra("type", 2)
         activity?.startService(intent)
 

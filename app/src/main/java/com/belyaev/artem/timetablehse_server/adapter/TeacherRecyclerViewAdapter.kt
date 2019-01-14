@@ -8,9 +8,8 @@ import android.widget.TextView
 import com.belyaev.artem.timetablehse_server.R
 
 
-import com.belyaev.artem.timetablehse_server.controller.fragment.TeacherListFragment.OnListFragmentInteractionListener
+import com.belyaev.artem.timetablehse_server.controller.navigation_activity.TeacherListFragment.OnListFragmentInteractionListener
 import com.belyaev.artem.timetablehse_server.controller.fragment.dummy.DummyContent.DummyItem
-import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
 
 import kotlinx.android.synthetic.main.fragment_teacher.view.*
@@ -44,7 +43,6 @@ class TeacherRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-        holder.mIdView.text = item.id.toString()
         holder.mContentView.text = item.name
 
         with(holder.mView) {
@@ -56,7 +54,7 @@ class TeacherRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
+
         val mContentView: TextView = mView.content
 
         override fun toString(): String {

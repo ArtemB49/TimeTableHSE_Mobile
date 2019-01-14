@@ -4,4 +4,7 @@
     <string name="title_exercises">Расписание</string>
     <string name="title_teachers">Преподаватели</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_activity_teacher_tab">TeacherTabActivity</string>
+    <string name="teacher_tab_info">Информация</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

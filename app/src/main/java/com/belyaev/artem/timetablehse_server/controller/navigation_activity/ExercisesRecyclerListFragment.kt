@@ -1,11 +1,10 @@
-package com.belyaev.artem.timetablehse_server.controller.fragment
+package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,12 +15,14 @@ import android.view.ViewGroup
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.WebService
 import com.belyaev.artem.timetablehse_server.adapter.ClassiesRecyclerAdapter
+import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherInfoFragment
 import com.belyaev.artem.timetablehse_server.model.ClassParcelable
+import com.belyaev.artem.timetablehse_server.utils.Constants
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.ArrayList
 
-class ClassiesRecyclerListFragment : Fragment()  {
+class ExercisesRecyclerListFragment : Fragment()  {
 
     //private val asyDate = AsyDateFormatter.instance
 
@@ -41,7 +42,7 @@ class ClassiesRecyclerListFragment : Fragment()  {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.registerReceiver(broadcastReceiver, IntentFilter(BROADCAST_ID))
-        Log.d("FUN","ClassiesRecyclerListFragment.onActivityCreated")
+        Log.d("FUN","ExercisesRecyclerListFragment.onActivityCreated")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -52,7 +53,7 @@ class ClassiesRecyclerListFragment : Fragment()  {
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
 
-        Log.d("FUN","ClassiesRecyclerListFragment.onCreateView")
+        Log.d("FUN","ExercisesRecyclerListFragment.onCreateView")
         initList {
             if (mMainView.context != null){
 
@@ -68,7 +69,7 @@ class ClassiesRecyclerListFragment : Fragment()  {
 
     private fun updateUI(list: ArrayList<ClassParcelable>){
 
-        Log.d("FUN","ClassiesRecyclerListFragment.updateUI")
+        Log.d("FUN","ExercisesRecyclerListFragment.updateUI")
         mClassiesAdapter = ClassiesRecyclerAdapter(list)
 
         activity?.runOnUiThread{
@@ -77,10 +78,10 @@ class ClassiesRecyclerListFragment : Fragment()  {
 
     }
 
-    private fun requestToAsy(){
+    private fun requestToServer(){
 
         val intent = Intent(activity,  WebService::class.java)
-        intent.putExtra("url", "http://192.168.100.9:1515/api/classies/1")
+        intent.putExtra("url", Constants.SERVICE_HOST.value + "api/classies/1")
         intent.putExtra("type", 1)
 
         activity?.startService(intent)
@@ -89,8 +90,8 @@ class ClassiesRecyclerListFragment : Fragment()  {
 
     private val broadcastReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("FUN","ClassiesRecyclerListFragment.broadcastReceiver.onReceive")
-            val classiesList = intent?.getParcelableArrayListExtra<ClassParcelable>("list")
+            Log.d("FUN","ExercisesRecyclerListFragment.broadcastReceiver.onReceive")
+            val classiesList = intent?.getParcelableArrayListExtra<ClassParcelable>("EXERCISES_LIST")
             if (classiesList != null) {
                 updateUI(classiesList)
             } else {
@@ -113,23 +114,27 @@ class ClassiesRecyclerListFragment : Fragment()  {
 
     private fun initList(completion: (ArrayList<ClassParcelable>) -> Unit) {
 
-
-            requestToAsy()
-
+        requestToServer()
     }
 
+    companion object {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private val ARG_SECTION_NUMBER = "section_number"
 
-
-
-    private fun parse(value: String): JSONArray?{
-        var result: JSONArray?= null
-        try {
-            result = JSONArray(value)
-
-        } catch (e: JSONException){
-            e.printStackTrace()
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        fun newInstance(sectionNumber: Int): ExercisesRecyclerListFragment {
+            val fragment = ExercisesRecyclerListFragment()
+            val args = Bundle()
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+            fragment.arguments = args
+            return fragment
         }
-        return result
     }
 
 }

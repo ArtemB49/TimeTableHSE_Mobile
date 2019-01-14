@@ -70,7 +70,7 @@ class WebService : Service() {
                     val classItem = classiesJSONArray.getJSONObject(i)
                     classiesList.add(ClassParcelable(classItem))
                 }
-                resultIntent.putParcelableArrayListExtra("list", classiesList)
+                resultIntent.putParcelableArrayListExtra("EXERCISES_LIST", classiesList)
             }
 
             2 -> {
@@ -83,7 +83,7 @@ class WebService : Service() {
                     val teacherItem = teacherJSONArray.getJSONObject(i)
                     teacherList.add(TeacherParcelable(teacherItem))
                 }
-                resultIntent.putParcelableArrayListExtra("list", teacherList)
+                resultIntent.putParcelableArrayListExtra("TEACHERS_LIST", teacherList)
             }
         }
 

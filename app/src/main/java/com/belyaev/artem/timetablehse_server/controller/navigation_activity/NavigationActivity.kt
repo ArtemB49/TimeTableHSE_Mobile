@@ -1,19 +1,16 @@
-package com.belyaev.artem.timetablehse_server.controller
+package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.controller.fragment.ClassiesRecyclerListFragment
-import com.belyaev.artem.timetablehse_server.controller.fragment.TeacherListFragment
+import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
 import kotlinx.android.synthetic.main.activity_navigation.*
-import kotlinx.android.synthetic.main.fragment_teacher.*
 
 class NavigationActivity : AppCompatActivity() ,
     BottomNavigationView.OnNavigationItemSelectedListener, TeacherListFragment.OnListFragmentInteractionListener {
@@ -25,7 +22,7 @@ class NavigationActivity : AppCompatActivity() ,
         setContentView(R.layout.activity_navigation)
 
         navigation.setOnNavigationItemSelectedListener(this)
-        loadFragment(ClassiesRecyclerListFragment())
+        loadFragment(ExercisesRecyclerListFragment())
         Log.d("FUN", "NavigationActivity.onCreate")
         //AsyDateFormatter.instance
     }
@@ -58,14 +55,18 @@ class NavigationActivity : AppCompatActivity() ,
         var fragment: Fragment? = null
 
         when (item.itemId){
-            R.id.navigation_timetable -> fragment = ClassiesRecyclerListFragment()
-            R.id.navigation_teachers -> fragment = TeacherListFragment()
+            R.id.navigation_timetable -> fragment =
+                    ExercisesRecyclerListFragment()
+            R.id.navigation_teachers -> fragment =
+                    TeacherListFragment()
         }
 
         return loadFragment(fragment)
     }
 
     override fun onListFragmentInteraction(item: TeacherParcelable?) {
-        Snackbar.make(getWindow().getDecorView().getRootView(), "onClick", Snackbar.LENGTH_SHORT).show()
+        val intent = Intent(this, TeacherTabActivity::class.java)
+        intent.putExtra("teacher", item)
+        startActivity(intent)
     }
 }

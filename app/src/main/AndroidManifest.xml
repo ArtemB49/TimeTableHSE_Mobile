@@ -16,7 +16,7 @@
         <activity android:name=".controller.MainActivity">
         </activity>
         <activity
-                android:name=".controller.NavigationActivity"
+                android:name=".controller.navigation_activity.NavigationActivity"
                 android:label="@string/title_activity_navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -31,6 +31,11 @@
                 android:exported="true"/>
 
         <activity android:name=".controller.ExerciseActivity">
+        </activity>
+        <activity
+                android:name=".controller.teacher_tab_activity.TeacherTabActivity"
+                android:label="@string/title_activity_teacher_tab"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

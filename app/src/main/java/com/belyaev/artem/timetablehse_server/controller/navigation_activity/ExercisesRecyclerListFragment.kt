@@ -35,6 +35,7 @@ class ExercisesRecyclerListFragment : Fragment()  {
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mMainView: View
     private lateinit var mRecyclerView: RecyclerView
+    private var isSection: Boolean = false
 
     private val lastVisibleItemPositiom: Int
         get() = mLayoutManager.findLastVisibleItemPosition()
@@ -81,7 +82,13 @@ class ExercisesRecyclerListFragment : Fragment()  {
     private fun requestToServer(){
 
         val intent = Intent(activity,  WebService::class.java)
-        intent.putExtra("url", Constants.SERVICE_HOST.value + "api/classies/1")
+
+        val path = when (isSection){
+            true -> "api/teachers/2"
+            false -> "api/classies/1"
+        }
+
+        intent.putExtra("url", Constants.SERVICE_HOST.value + path)
         intent.putExtra("type", 1)
 
         activity?.startService(intent)
@@ -132,6 +139,7 @@ class ExercisesRecyclerListFragment : Fragment()  {
             val fragment = ExercisesRecyclerListFragment()
             val args = Bundle()
             args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+            fragment.isSection = true
             fragment.arguments = args
             return fragment
         }

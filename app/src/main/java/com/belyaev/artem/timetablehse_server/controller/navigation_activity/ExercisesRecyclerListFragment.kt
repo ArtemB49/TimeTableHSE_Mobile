@@ -1,8 +1,5 @@
 package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -12,26 +9,29 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.WebService
-import com.belyaev.artem.timetablehse_server.adapter.ClassiesRecyclerAdapter
-import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherInfoFragment
+import com.belyaev.artem.timetablehse_server.adapter.ExercisesRecyclerAdapter
+import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.ClassParcelable
+import com.belyaev.artem.timetablehse_server.model.Exercise
+import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
-import org.json.JSONArray
-import org.json.JSONException
-import java.util.ArrayList
+import com.belyaev.artem.timetablehse_server.utils.ExerciseCallType
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.classies_recycler_fragment.*
+import kotlin.collections.ArrayList
 
 class ExercisesRecyclerListFragment : Fragment()  {
 
     //private val asyDate = AsyDateFormatter.instance
-
-    private val BROADCAST_ID = "com.artem.timetable"
-    private val purchaseList: ArrayList<ClassParcelable> = ArrayList()
-    private var purchaseCount = 0
     //private val mRealm = Realm.getDefaultInstance()
     //private val mAsyService = AsyService.instance
-    private lateinit var mClassiesAdapter: ClassiesRecyclerAdapter
+
+    var exerciseCallType: ExerciseCallType = ExerciseCallType.BY_GROUP
+
+    private lateinit var mExercisesAdapter: ExercisesRecyclerAdapter
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mMainView: View
     private lateinit var mRecyclerView: RecyclerView
@@ -40,11 +40,6 @@ class ExercisesRecyclerListFragment : Fragment()  {
     private val lastVisibleItemPositiom: Int
         get() = mLayoutManager.findLastVisibleItemPosition()
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        activity?.registerReceiver(broadcastReceiver, IntentFilter(BROADCAST_ID))
-        Log.d("FUN","ExercisesRecyclerListFragment.onActivityCreated")
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
@@ -55,56 +50,76 @@ class ExercisesRecyclerListFragment : Fragment()  {
         mRecyclerView.layoutManager = mLayoutManager
 
         Log.d("FUN","ExercisesRecyclerListFragment.onCreateView")
-        initList {
-            if (mMainView.context != null){
 
-                updateUI(it)
-            }
-        }
 
+        callWebService(exerciseCallType)
         setRecyclerViewScrollListener()
 
 
         return mMainView
     }
 
-    private fun updateUI(list: ArrayList<ClassParcelable>){
+    private fun updateUI(list: ArrayList<Exercise>?){
 
         Log.d("FUN","ExercisesRecyclerListFragment.updateUI")
-        mClassiesAdapter = ClassiesRecyclerAdapter(list)
 
-        activity?.runOnUiThread{
-            mRecyclerView.adapter = mClassiesAdapter
+        if (list != null && list.size != 0){
+            mExercisesAdapter = ExercisesRecyclerAdapter(list)
+
+            activity?.runOnUiThread{
+                mRecyclerView.adapter = mExercisesAdapter
+            }
+            empty_view.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        } else {
+            empty_view.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
         }
-
     }
 
-    private fun requestToServer(){
+    private fun callWebService(exerciseCallType: ExerciseCallType){
 
-        val intent = Intent(activity,  WebService::class.java)
+        val apiTimeTable = ApiTimeTable.getApi()
 
-        val path = when (isSection){
-            true -> "api/teachers/2"
-            false -> "api/classies/1"
-        }
+        when (exerciseCallType) {
+            ExerciseCallType.BY_GROUP -> {
+                val call = apiTimeTable.getExercisesByGroupID()
+                call
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
 
-        intent.putExtra("url", Constants.SERVICE_HOST.value + path)
-        intent.putExtra("type", 1)
+                        updateUI(it.classies)
 
-        activity?.startService(intent)
+                        Log.d("-------RESULT-------", "Successful")
+                    }, {
+                        Toast.makeText(activity?.applicationContext, it.message, Toast.LENGTH_SHORT).show()
+                    })
+            }
 
-    }
+            ExerciseCallType.BY_TEACHER -> {
+                val teacherID = (activity as TeacherTabActivity).mTeacher.id
 
-    private val broadcastReceiver = object : BroadcastReceiver(){
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("FUN","ExercisesRecyclerListFragment.broadcastReceiver.onReceive")
-            val classiesList = intent?.getParcelableArrayListExtra<ClassParcelable>("EXERCISES_LIST")
-            if (classiesList != null) {
-                updateUI(classiesList)
-            } else {
+                val call = apiTimeTable.getExercisesByTeacherID(teacherID)
+                call
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
 
+                        updateUI(it.classies)
+
+                        Log.d("-------RESULT-------", "Successful")
+                    }, {
+                        Toast.makeText(activity?.applicationContext, it.message, Toast.LENGTH_SHORT).show()
+                    })
             }
         }
+
+
+
+
 
     }
 
@@ -119,10 +134,6 @@ class ExercisesRecyclerListFragment : Fragment()  {
     }
 
 
-    private fun initList(completion: (ArrayList<ClassParcelable>) -> Unit) {
-
-        requestToServer()
-    }
 
     companion object {
         /**
@@ -139,6 +150,7 @@ class ExercisesRecyclerListFragment : Fragment()  {
             val fragment = ExercisesRecyclerListFragment()
             val args = Bundle()
             args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+            fragment.exerciseCallType = ExerciseCallType.BY_TEACHER
             fragment.isSection = true
             fragment.arguments = args
             return fragment

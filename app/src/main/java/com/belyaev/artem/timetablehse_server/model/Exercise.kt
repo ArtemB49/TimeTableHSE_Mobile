@@ -1,19 +1,12 @@
 package com.belyaev.artem.timetablehse_server.model
 
-import io.realm.RealmObject
 import java.util.*
 
+class Exercise {
 
-open class Exercise(
-    open var id: Int = 0,
-    open var lesson: Lesson = Lesson(),
-    open var teacher: Teacher = Teacher(),
-    open var date: Date = Date(),
-    open var time: String = ""
-
-) : RealmObject()
-
-
-
-
-
+    var id: Int = 0
+    var lesson: String? = ""
+    var teacher: String? = ""
+    var date: String? = ""
+    var time: String? = ""
+}

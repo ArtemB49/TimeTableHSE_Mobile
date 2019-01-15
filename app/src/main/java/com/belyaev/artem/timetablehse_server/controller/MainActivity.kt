@@ -1,86 +1,84 @@
 package com.belyaev.artem.timetablehse_server.controller
 
+import android.annotation.SuppressLint
 import android.app.ListActivity
-import android.os.AsyncTask
 import android.os.Bundle
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import android.util.Log
-import android.os.StrictMode
-import android.widget.ListView
-import com.belyaev.artem.timetablehse_server.adapter.ClassiesAdapter
+import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.model.ClassParcelable
-import org.json.JSONArray
-import org.json.JSONObject
+import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
+import com.belyaev.artem.timetablehse_server.utils.Constants
+import com.belyaev.artem.timetablehse_server.utils.ExerciseCallType
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import okhttp3.OkHttpClient
 
 
 class MainActivity : ListActivity() {
 
-    val client: OkHttpClient = OkHttpClient()
-
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-        }
-
-
-
-        val okHttpHandler = OkHttpHandler()
-        okHttpHandler.execute("http://192.168.100.9:1515/api/classies/1")
+        val callType = intent.getIntExtra(Constants.EXERCISE_CALL_TYPE.value, ExerciseCallType.BY_GROUP.value)
+        callWebService(2)
 
 
     }
 
-    fun updateUI(classies: List<ClassParcelable>){
-        val listView = findViewById<ListView>(android.R.id.list)
-        val adapter = ClassiesAdapter(this, classies)
-        listView.adapter = adapter
-    }
+    private fun callWebService(callType: Int){
 
-    inner class OkHttpHandler: AsyncTask<String, Void, List<ClassParcelable>?>(){
+        val apiTimeTable = ApiTimeTable.getApi()
 
-        private val client = OkHttpClient()
+        when (callType) {
+            1 -> {
+                val call = apiTimeTable.getExercisesByGroupID()
+                call
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
 
-        override fun onPostExecute(result: List<ClassParcelable>?) {
-            if (result == null) {
-                Log.d("RESPONSE", "NO result")
-            } else {
-                updateUI(result)
+                        val classies = it.classies
+                        val lesson = if (classies != null) classies[0].lesson else "no result"
+
+
+                        Log.d("-------RESULT-------", lesson)
+                    }, {
+                        Toast.makeText(applicationContext, it.message, Toast.LENGTH_SHORT).show()
+                    })
             }
 
-        }
+            2 -> {
+                val call = apiTimeTable.getExercisesByTeacherID(1)
+                call
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
 
-        override fun doInBackground(vararg params: String?): List<ClassParcelable>? {
-            val builder = Request.Builder()
-            builder.url(params[0])
-            val request = builder.build()
+                        val classies = it.classies
+                        val lesson = if (classies != null) classies[0].lesson else "no result"
 
-            try {
-                val response = client.newCall(request).execute()
-                val JSON = JSONObject(response.body()!!.string())
 
-                val classiesList: MutableList<ClassParcelable> = mutableListOf()
-
-                val classiesJSONArray: JSONArray = JSON["classies"] as JSONArray
-                for (i in 0..(classiesJSONArray.length()-1)) {
-                    val classItem = classiesJSONArray.getJSONObject(i)
-                    classiesList.add(ClassParcelable(classItem))
-                }
-
-                return classiesList
-            } catch (e: Exception) {
-                e.printStackTrace()
+                        Log.d("-------RESULT-------", lesson)
+                    }, {
+                        Toast.makeText(applicationContext, it.message, Toast.LENGTH_SHORT).show()
+                    })
             }
-
-            return null
         }
+
+
+
 
 
     }
 
 }
+
+
+
+
+
+

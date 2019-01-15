@@ -26,7 +26,14 @@ data class ClassParcelable(
         time = jsonObject["time"] as String
     )
 
-
+    constructor(exercise: Exercise)
+            :this(
+        id = exercise.id,
+        lesson = exercise.lesson!!,
+        teacher = exercise.teacher!!,
+        date = exercise.date!!,
+        time = exercise.time!!
+    )
 
     constructor(parcel: Parcel)
             :this(

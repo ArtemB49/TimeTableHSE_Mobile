@@ -8,12 +8,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.model.ClassParcelable
+import com.belyaev.artem.timetablehse_server.model.Exercise
 import kotlinx.android.synthetic.main.class_row.view.*
 import kotlinx.android.synthetic.main.list_item_classies.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ClassiesRecyclerViewHolder (itemView: View):
+class ExercisesRecyclerViewHolder (itemView: View):
     RecyclerView.ViewHolder(itemView),
     View.OnClickListener{
 
@@ -36,15 +37,15 @@ class ClassiesRecyclerViewHolder (itemView: View):
 
     }
 
-    fun bindData(classParcelable: ClassParcelable){
+    fun bindData(exercise: Exercise){
 
-        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()).parse(classParcelable.date)
+        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()).parse(exercise.date)
 
         mainView.item_tv_date.text = SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(date)
-        mainView.item_tv_time.text = classParcelable.time
-        mainView.item_base_lesson.text = classParcelable.lesson
-        mainView.item_extra_lesson.text = classParcelable.lesson
-        mainView.item_tv_teacher.text = classParcelable.teacher
+        mainView.item_tv_time.text = exercise.time
+        mainView.item_base_lesson.text = exercise.lesson
+        mainView.item_extra_lesson.text = exercise.lesson
+        mainView.item_tv_teacher.text = exercise.teacher
 
     }
 

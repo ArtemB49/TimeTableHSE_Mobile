@@ -3,13 +3,13 @@ package com.belyaev.artem.timetablehse_server.adapter
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.model.ClassParcelable
+import com.belyaev.artem.timetablehse_server.model.Exercise
 import com.belyaev.artem.timetablehse_server.utils.ExerciseOnClickListener
 import com.belyaev.artem.timetablehse_server.utils.extention.inflate
 
 
-class ClassiesRecyclerAdapter(private val exercises: ArrayList<ClassParcelable>):
-    RecyclerView.Adapter<ClassiesRecyclerViewHolder>(){
+class ExercisesRecyclerAdapter(private val exercises: ArrayList<Exercise>):
+    RecyclerView.Adapter<ExercisesRecyclerViewHolder>(){
 
     private var mChangePosition: Int = 0
     private var mPreviousChangePosition: Int = -1
@@ -17,16 +17,16 @@ class ClassiesRecyclerAdapter(private val exercises: ArrayList<ClassParcelable>)
     //private val mRealm = Realm.getDefaultInstance()
     private lateinit var mRecyclerView: RecyclerView
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClassiesRecyclerViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExercisesRecyclerViewHolder {
 
         val inflatedView = parent.inflate(R.layout.list_item_classies, false)
 
 
-        return ClassiesRecyclerViewHolder(inflatedView)
+        return ExercisesRecyclerViewHolder(inflatedView)
 
     }
 
-    override fun onBindViewHolder(holder: ClassiesRecyclerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ExercisesRecyclerViewHolder, position: Int) {
 
 
         val exercise = exercises[position]

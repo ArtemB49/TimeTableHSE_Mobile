@@ -10,15 +10,17 @@ data class TeacherParcelable(
 
 ) : Parcelable {
 
-
+    constructor(teacher: Teacher)
+            :this(
+        id = teacher.id,
+        name = teacher.name
+    )
 
     constructor(jsonObject: JSONObject)
             :this(
         id = jsonObject["id"] as Int,
         name = jsonObject["name"] as String
     )
-
-
 
     constructor(parcel: Parcel)
             :this(

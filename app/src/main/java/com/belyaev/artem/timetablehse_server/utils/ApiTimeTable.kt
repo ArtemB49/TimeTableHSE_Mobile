@@ -1,6 +1,8 @@
 package com.belyaev.artem.timetablehse_server.utils
 
 import com.belyaev.artem.timetablehse_server.BuildConfig
+import com.belyaev.artem.timetablehse_server.model.ExercisesResponse
+import com.belyaev.artem.timetablehse_server.model.TeachersResponse
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,6 +19,9 @@ interface ApiTimeTable {
 
     @GET("api/teachers/{teacher_id}")
     fun getExercisesByTeacherID(@Path("teacher_id") teacherID: Int): Observable<ExercisesResponse>
+
+    @GET("api/teachers")
+    fun getTeachers(): Observable<TeachersResponse>
 
     companion object {
 

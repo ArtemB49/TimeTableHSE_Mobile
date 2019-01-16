@@ -1,4 +1,4 @@
-package com.belyaev.artem.timetablehse_server.utils
+package com.belyaev.artem.timetablehse_server.model
 
 import com.belyaev.artem.timetablehse_server.model.ClassParcelable
 import com.belyaev.artem.timetablehse_server.model.Exercise

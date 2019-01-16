@@ -27,11 +27,6 @@
             </intent-filter>
         </activity>
 
-        <service
-                android:name=".WebService"
-                android:enabled="true"
-                android:exported="true"/>
-
         <activity android:name=".controller.ExerciseActivity">
         </activity>
         <activity

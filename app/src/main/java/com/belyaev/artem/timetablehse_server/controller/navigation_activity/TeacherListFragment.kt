@@ -1,9 +1,7 @@
 package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
-import android.content.BroadcastReceiver
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -12,13 +10,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.WebService
 import com.belyaev.artem.timetablehse_server.adapter.TeacherRecyclerViewAdapter
-
+import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
-import com.belyaev.artem.timetablehse_server.utils.Constants
-import java.util.ArrayList
+import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.classies_recycler_fragment.*
 
 /**
  * A fragment representing a list of Items.
@@ -27,22 +27,14 @@ import java.util.ArrayList
  */
 class TeacherListFragment : Fragment() {
 
-    // TODO: Customize parameters
-    private var columnCount = 1
 
     private var listener: OnListFragmentInteractionListener? = null
 
-    private val BROADCAST_ID = "com.artem.timetable"
     private lateinit var mMainView: View
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mTeachersAdapter: TeacherRecyclerViewAdapter
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        activity?.registerReceiver(broadcastReceiver, IntentFilter(BROADCAST_ID))
-        Log.d("FUN","TeacherListFragment.onActivityCreated")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,13 +47,7 @@ class TeacherListFragment : Fragment() {
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
 
-        Log.d("FUN","TeacherListFragment.onCreateView")
-        initList {
-            if (mMainView.context != null){
-
-                updateUI(it)
-            }
-        }
+        callWebService()
 
         return mMainView
     }
@@ -80,60 +66,46 @@ class TeacherListFragment : Fragment() {
         listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training name
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
+
     interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: TeacherParcelable?)
+        fun onListFragmentInteraction(item: Teacher?)
     }
 
-    private val broadcastReceiver = object : BroadcastReceiver(){
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("FUN","TeacherListFragment.broadcastReceiver.onReceive")
-            val teachersList = intent?.getParcelableArrayListExtra<TeacherParcelable>("TEACHERS_LIST")
-
-
-            if (teachersList != null) {
-                updateUI(teachersList)
-            } else {
-
-            }
-        }
-    }
-
-    private fun initList(completion: (ArrayList<TeacherParcelable>) -> Unit) {
-
-
-        requestToServer()
-
-    }
-
-    private fun updateUI(list: ArrayList<TeacherParcelable>){
+    private fun updateUI(list: ArrayList<Teacher>?){
 
         Log.d("FUN","TeacherListFragment.updateUI")
-        mTeachersAdapter = TeacherRecyclerViewAdapter(list, listener)
 
-        activity?.runOnUiThread{
-            mRecyclerView.adapter = mTeachersAdapter
+        if (list != null && list.size != 0){
+            mTeachersAdapter = TeacherRecyclerViewAdapter(list, listener)
+
+            activity?.runOnUiThread{
+                mRecyclerView.adapter = mTeachersAdapter
+            }
+            empty_view.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        } else {
+            empty_view.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
         }
 
     }
 
-    private fun requestToServer(){
+    @SuppressLint("CheckResult")
+    private fun callWebService() {
 
-        val intent = Intent(activity,  WebService::class.java)
-        intent.putExtra("url", Constants.SERVICE_HOST.value + "api/teachers")
-        intent.putExtra("type", 2)
-        activity?.startService(intent)
+        val apiTimeTable = ApiTimeTable.getApi()
+        val call = apiTimeTable.getTeachers()
+        call
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
 
+                updateUI(it.teachers)
+
+                Log.d("-------RESULT-------", "Successful")
+            }, {
+                Toast.makeText(activity?.applicationContext, it.message, Toast.LENGTH_SHORT).show()
+            })
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MenuItem
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
+import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
 import kotlinx.android.synthetic.main.activity_navigation.*
 
@@ -64,9 +65,10 @@ class NavigationActivity : AppCompatActivity() ,
         return loadFragment(fragment)
     }
 
-    override fun onListFragmentInteraction(item: TeacherParcelable?) {
+    override fun onListFragmentInteraction(item: Teacher?) {
+        val teacherParcelable = TeacherParcelable(item!!)
         val intent = Intent(this, TeacherTabActivity::class.java)
-        intent.putExtra("teacher", item)
+        intent.putExtra("teacher", teacherParcelable)
         startActivity(intent)
     }
 }

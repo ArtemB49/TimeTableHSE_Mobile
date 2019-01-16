@@ -7,4 +7,6 @@
     <string name="title_activity_teacher_tab">TeacherTabActivity</string>
     <string name="teacher_tab_info">Информация</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="exercise_recycler_empty">Заняния не найдены</string>
+    <string name="teachers_recycler_empty">Преподаватели не найдены</string>
 </resources>

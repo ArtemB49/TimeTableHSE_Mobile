@@ -53,13 +53,11 @@ class NavigationActivity : AppCompatActivity() ,
 
         currentID = item.itemId
 
-        var fragment: Fragment? = null
-
-        when (item.itemId){
-            R.id.navigation_timetable -> fragment =
-                    ExercisesRecyclerListFragment()
-            R.id.navigation_teachers -> fragment =
-                    TeacherListFragment()
+        val fragment: Fragment? = when (item.itemId){
+            R.id.navigation_timetable -> ExercisesRecyclerListFragment()
+            R.id.navigation_teachers -> TeacherListFragment()
+            R.id.navigation_chat -> ChatFragment()
+            else -> null
         }
 
         return loadFragment(fragment)

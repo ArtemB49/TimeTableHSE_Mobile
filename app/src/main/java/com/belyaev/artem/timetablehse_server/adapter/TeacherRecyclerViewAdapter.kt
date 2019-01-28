@@ -15,11 +15,7 @@ import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
 
 import kotlinx.android.synthetic.main.fragment_teacher.view.*
 
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
- */
+
 class TeacherRecyclerViewAdapter(
     private val mValues: ArrayList<Teacher>,
     private val mListener: OnListFragmentInteractionListener?
@@ -30,8 +26,6 @@ class TeacherRecyclerViewAdapter(
     init {
         mOnClickListener = View.OnClickListener { v ->
             val item = v.tag as Teacher
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
         }
     }

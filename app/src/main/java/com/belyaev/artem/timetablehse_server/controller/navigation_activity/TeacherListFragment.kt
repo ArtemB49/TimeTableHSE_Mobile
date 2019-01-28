@@ -14,7 +14,6 @@ import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.adapter.TeacherRecyclerViewAdapter
 import com.belyaev.artem.timetablehse_server.model.Teacher
-import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

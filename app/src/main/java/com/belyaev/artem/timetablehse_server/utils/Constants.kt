@@ -4,6 +4,7 @@ enum class Constants(val value: String) {
     SERVICE_IP("http://192.168.100.10"),
     SERVICE_PORT("1515"),
     SERVICE_HOST("http://192.168.100.10:1515/"),
+    SERVICE_HOST_IO("http://192.168.100.10:1515"),
 
     EXERCISE_CALL_TYPE("EXERCISE_CALL_TYPE")
 }

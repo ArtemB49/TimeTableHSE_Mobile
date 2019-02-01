@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.View
 import com.belyaev.artem.timetablehse_server.model.Message
 import kotlinx.android.synthetic.main.item_message_received.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ReceivedMessageHolder (itemView: View):
     RecyclerView.ViewHolder(itemView),
@@ -23,9 +25,8 @@ class ReceivedMessageHolder (itemView: View):
 
     fun bindData(message: Message){
 
-        //val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault()).parse(message.time)
-        //mainView.text_message_time.text = SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(date)
 
+        mainView.text_message_time.text = SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(message.date)
 
         mainView.text_message_body.text = message.content
         mainView.text_message_name.text = message.userName

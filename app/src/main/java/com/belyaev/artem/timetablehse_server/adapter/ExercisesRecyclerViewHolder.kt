@@ -7,9 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.belyaev.artem.timetablehse_server.R
-import com.belyaev.artem.timetablehse_server.model.ClassParcelable
 import com.belyaev.artem.timetablehse_server.model.Exercise
-import kotlinx.android.synthetic.main.class_row.view.*
 import kotlinx.android.synthetic.main.list_item_classies.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,10 +17,9 @@ class ExercisesRecyclerViewHolder (itemView: View):
     View.OnClickListener{
 
     var mainView: View = itemView
-    private val classParcelable: ClassParcelable? = null
-    private lateinit var mContext: Context
-    var moreInformationView: LinearLayout
-    var baseSumTextView: TextView
+    private var mContext: Context
+    private var moreInformationView: LinearLayout
+    private var baseSumTextView: TextView
 
 
     init {

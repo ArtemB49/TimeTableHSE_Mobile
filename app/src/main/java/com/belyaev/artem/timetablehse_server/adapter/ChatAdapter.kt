@@ -7,7 +7,7 @@ import com.belyaev.artem.timetablehse_server.model.Message
 import com.belyaev.artem.timetablehse_server.utils.extention.inflate
 
 
-class ChatAdapter(private val messages: ArrayList<Message>):
+class ChatAdapter(private val messages: MutableList<Message>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     private val VIEW_TYPE_MESSAGE_SENT = 1

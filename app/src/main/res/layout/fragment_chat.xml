@@ -18,6 +18,14 @@
             android:scrollbars="vertical">
     </android.support.v7.widget.RecyclerView>
 
+    <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
+            android:visibility="gone"
+            android:text="Нет сообщений" />
+
     <!-- A horizontal line between the chatbox and RecyclerView -->
     <View
             android:id="@+id/line_1"
@@ -63,7 +71,7 @@
                 android:layout_width="64dp"
                 android:layout_height="48dp"
                 android:gravity="center"
-                android:layout_gravity="bottom" />
+                android:layout_gravity="bottom"/>
 
     </LinearLayout>
 

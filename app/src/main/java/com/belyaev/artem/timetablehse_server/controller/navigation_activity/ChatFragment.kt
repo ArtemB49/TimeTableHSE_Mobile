@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,10 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
 import android.util.Log
+import android.widget.Button
 import com.belyaev.artem.timetablehse_server.R
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.fragment_chat.*
 import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,6 +31,7 @@ class ChatFragment : Fragment() {
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mMessagesAdapter: ChatAdapter
+    private val mMessages: MutableList<Message> = mutableListOf()
     private var mSocket: Socket? = null
     private var isConnected = true
     private var isNeedHistory = true
@@ -46,23 +50,18 @@ class ChatFragment : Fragment() {
         if (mSocket == null) return null
         mSocket.on(Socket.EVENT_CONNECT, onConnect)
         mSocket.on("history", onHistory)
+        mSocket.on("message", onMessage)
         mSocket.connect()
 
+        val sendButton = mMainView.findViewById<Button>(R.id.button_chatbox_send)
 
-        val message1 = Message(1, "hi", 1, "Artem", Date())
-
-
-        val message2 = Message(1, "hello", 3, "tos", Date())
-
-
-        messageListPlaceholder.add(message1)
-        messageListPlaceholder.add(message2)
-        messageListPlaceholder.add(message1)
-        messageListPlaceholder.add(message2)
+        sendButton.setOnClickListener(onClickSendMessage)
 
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
+        mMessagesAdapter = ChatAdapter(mMessages)
+        mRecyclerView.adapter = mMessagesAdapter
 
         return mMainView
     }
@@ -73,7 +72,6 @@ class ChatFragment : Fragment() {
             mSocket?.emit("receiveHistory", 1)
             isNeedHistory = false
         }
-
     }
 
 
@@ -88,30 +86,37 @@ class ChatFragment : Fragment() {
     private val onHistory: Emitter.Listener = Emitter.Listener {
         activity?.runOnUiThread {
             val messagesJson = it[0] as JSONArray
-            val messages = ArrayList<Message>()
             for (i in 0..messagesJson.length()-1) {
                 val message = Message(messagesJson[i] as JSONObject)
-                messages.add(message)
-
+                mMessages.add(message)
             }
-            updateUI(messages)
+            mMessagesAdapter.notifyDataSetChanged()
         }
     }
 
-    private fun updateUI(list: ArrayList<Message>?){
-
-        if (list != null && list.size != 0){
-            mMessagesAdapter = ChatAdapter(list)
-
-            activity?.runOnUiThread{
-                mRecyclerView.adapter = mMessagesAdapter
-            }
-            //empty_view.visibility = View.GONE
-            //recyclerView.visibility = View.VISIBLE
-        } else {
-            //empty_view.visibility = View.VISIBLE
-            //recyclerView.visibility = View.GONE
+    private val onMessage: Emitter.Listener = Emitter.Listener {
+        activity?.runOnUiThread {
+            val messageJson = it[0] as JSONObject
+            val message = Message(messageJson)
+            mMessages.add(message)
+            mMessagesAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun sendMessage(message: Message){
+        mSocket = MainApplication.mSocket
+        mSocket?.emit("msg", JSONObject("" +
+                "{" +
+                    "username: \"${message.userName}\"," +
+                    "user_id: ${message.userID}," +
+                    "content: \"${message.content}\"" +
+                "}"))
+    }
+
+    private val onClickSendMessage = View.OnClickListener {
+        val message = Message(1, edittext_chatbox.text.toString(), 1, "Artem", Date())
+        edittext_chatbox.text.clear()
+        sendMessage(message)
     }
 }
 

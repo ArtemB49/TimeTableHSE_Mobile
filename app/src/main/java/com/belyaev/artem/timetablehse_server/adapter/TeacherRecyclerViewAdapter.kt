@@ -1,18 +1,14 @@
 package com.belyaev.artem.timetablehse_server.adapter
 
+
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.belyaev.artem.timetablehse_server.R
-
-
 import com.belyaev.artem.timetablehse_server.controller.navigation_activity.TeacherListFragment.OnListFragmentInteractionListener
-import com.belyaev.artem.timetablehse_server.controller.fragment.dummy.DummyContent.DummyItem
 import com.belyaev.artem.timetablehse_server.model.Teacher
-import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
-
 import kotlinx.android.synthetic.main.fragment_teacher.view.*
 
 

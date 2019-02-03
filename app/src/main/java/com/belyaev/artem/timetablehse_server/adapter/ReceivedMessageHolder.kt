@@ -26,7 +26,15 @@ class ReceivedMessageHolder (itemView: View):
     fun bindData(message: Message){
 
 
-        mainView.text_message_time.text = SimpleDateFormat("dd.MM.yyyy", Locale.FRANCE).format(message.date)
+        val date = message.date ?: Date()
+
+
+        val stringDate = when (date > Date()){
+            true -> SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.FRANCE).format(date)
+            false -> SimpleDateFormat("HH:mm:ss", Locale.FRANCE).format(date)
+        }
+
+        mainView.text_message_time.text = stringDate
 
         mainView.text_message_body.text = message.content
         mainView.text_message_name.text = message.userName

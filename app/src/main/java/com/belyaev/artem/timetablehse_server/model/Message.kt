@@ -9,7 +9,7 @@ class Message (
     var content: String? = "",
     var userID: Int? = 1,
     var userName: String? = "",
-    var date: Date? = Date(),
+    var date: Date = Date(),
     private var stringDate: String = ""
 )
 {

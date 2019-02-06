@@ -13,6 +13,7 @@ class ChatAdapter(private val messages: MutableList<Message>):
     private val VIEW_TYPE_MESSAGE_SENT = 1
     private val VIEW_TYPE_MESSAGE_RECEIVED = 2
 
+
     private val userIDPlaceholder: Int = 1
 
     //private val mRealm = Realm.getDefaultInstance()
@@ -78,4 +79,8 @@ class ChatAdapter(private val messages: MutableList<Message>):
         mRecyclerView = recyclerView
     }
 
+    fun addItem(message: Message){
+        messages.add(message)
+        notifyItemInserted(messages.size)
+    }
 }

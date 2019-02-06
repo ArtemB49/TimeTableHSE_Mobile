@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="com.belyaev.artem.timetablehse_server">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.belyaev.artem.timetablehse_server">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -15,19 +16,20 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".controller.MainActivity">
-
-        </activity>
-        <activity
-                android:name=".controller.navigation_activity.NavigationActivity"
-                android:label="@string/title_activity_navigation">
+        <activity android:name=".controller.authorization.AuthorizationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".controller.MainActivity">
+        </activity>
+        <activity
+                android:name=".controller.navigation_activity.NavigationActivity"
+                android:label="@string/title_activity_navigation">
 
+        </activity>
         <activity android:name=".controller.ExerciseActivity">
         </activity>
         <activity

@@ -4,25 +4,21 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.Button
 import com.belyaev.artem.timetablehse_server.MainApplication
+import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.adapter.ChatAdapter
 import com.belyaev.artem.timetablehse_server.model.Message
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import org.json.JSONObject
-import android.util.Log
-import android.widget.Button
-import com.belyaev.artem.timetablehse_server.R
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_chat.*
 import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class ChatFragment : Fragment() {
@@ -36,7 +32,6 @@ class ChatFragment : Fragment() {
     private var isConnected = true
     private var isNeedHistory = true
 
-    private val messageListPlaceholder = arrayListOf<Message>()
 
 
     override fun onCreateView(
@@ -84,22 +79,28 @@ class ChatFragment : Fragment() {
     }
 
     private val onHistory: Emitter.Listener = Emitter.Listener {
-        activity?.runOnUiThread {
+        activity?.run {
             val messagesJson = it[0] as JSONArray
             for (i in 0..messagesJson.length()-1) {
                 val message = Message(messagesJson[i] as JSONObject)
                 mMessages.add(message)
             }
-            mMessagesAdapter.notifyDataSetChanged()
+            mMessages.sortBy{selector(it)}
+            activity?.runOnUiThread {
+                mMessagesAdapter.notifyDataSetChanged()
+            }
+
         }
     }
 
     private val onMessage: Emitter.Listener = Emitter.Listener {
-        activity?.runOnUiThread {
+        activity?.run {
             val messageJson = it[0] as JSONObject
             val message = Message(messageJson)
-            mMessages.add(message)
-            mMessagesAdapter.notifyDataSetChanged()
+            activity?.runOnUiThread {
+                mMessagesAdapter.addItem(message)
+                mRecyclerView.scrollToPosition(mMessagesAdapter.itemCount - 1)
+            }
         }
     }
 
@@ -117,6 +118,14 @@ class ChatFragment : Fragment() {
         val message = Message(1, edittext_chatbox.text.toString(), 1, "Artem", Date())
         edittext_chatbox.text.clear()
         sendMessage(message)
+    }
+
+    fun selector(message: Message): Date = message.date
+
+    override fun onDetach() {
+        super.onDetach()
+        val mSocket = MainApplication.mSocket
+        mSocket?.disconnect()
     }
 }
 

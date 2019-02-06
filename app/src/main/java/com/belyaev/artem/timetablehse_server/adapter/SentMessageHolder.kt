@@ -23,17 +23,13 @@ class SentMessageHolder (itemView: View):
     }
 
     fun bindData(message: Message){
-
-        val date = message.date ?: Date()
-
-
-        val stringDate = when (date > Date()){
-            true -> SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.FRANCE).format(date)
-            false -> SimpleDateFormat("HH:mm:ss", Locale.FRANCE).format(date)
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.FRANCE)
+        val stringDate = when (dateFormat.format(message.date).equals(dateFormat.format(Date()))){
+            true -> SimpleDateFormat("HH:mm", Locale.FRANCE).format(message.date)
+            false -> SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.FRANCE).format(message.date)
         }
 
         mainView.text_message_time.text = stringDate
-
 
         mainView.text_message_body.text = message.content
 

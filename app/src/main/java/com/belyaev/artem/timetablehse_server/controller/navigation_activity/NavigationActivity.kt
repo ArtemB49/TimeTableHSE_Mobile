@@ -8,24 +8,25 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
 import com.belyaev.artem.timetablehse_server.R
+import com.belyaev.artem.timetablehse_server.controller.authorization.AuthorizationActivity
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
+import com.belyaev.artem.timetablehse_server.utils.Constants
 import kotlinx.android.synthetic.main.activity_navigation.*
 
 class NavigationActivity : AppCompatActivity() ,
     BottomNavigationView.OnNavigationItemSelectedListener, TeacherListFragment.OnListFragmentInteractionListener {
 
-    private var currentID: Int = R.id.navigation_timetable
+    private var mCurrentID: Int = R.id.navigation_timetable
+    private var mTemptID: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
-
         navigation.setOnNavigationItemSelectedListener(this)
         loadFragment(ExercisesRecyclerListFragment())
-        Log.d("FUN", "NavigationActivity.onCreate")
-        //AsyDateFormatter.instance
+
     }
 
     private fun loadFragment(fragment: Fragment?): Boolean{
@@ -36,9 +37,7 @@ class NavigationActivity : AppCompatActivity() ,
                 .commit()
             Log.d("FUN", "NavigationActivity.loadFragment.true")
             return true
-
         }
-
         return false
 
     }
@@ -47,16 +46,16 @@ class NavigationActivity : AppCompatActivity() ,
 
         Log.d("FUN", "NavigationActivity.onNavigationItemSelected")
 
-        if (item.itemId == currentID){
+        if (item.itemId == mCurrentID){
             return false
         }
 
-        currentID = item.itemId
+        mCurrentID = item.itemId
 
         val fragment: Fragment? = when (item.itemId){
             R.id.navigation_timetable -> ExercisesRecyclerListFragment()
             R.id.navigation_teachers -> TeacherListFragment()
-            R.id.navigation_chat -> ChatFragment()
+            R.id.navigation_chat -> chooseChat()
             else -> null
         }
 
@@ -68,5 +67,32 @@ class NavigationActivity : AppCompatActivity() ,
         val intent = Intent(this, TeacherTabActivity::class.java)
         intent.putExtra("teacher", teacherParcelable)
         startActivity(intent)
+    }
+
+    private fun chooseChat(): Fragment?{
+        val sharedPreferences = getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
+        val userID = sharedPreferences.getInt("user_id", -1)
+
+
+        return when (userID == -1){
+            true -> {
+                startActivityForResult(Intent(this, AuthorizationActivity::class.java),1)
+                mCurrentID = R.id.navigation_timetable
+                null
+            }
+            false -> ChatFragment()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        mTemptID = when(resultCode) {
+            200 ->  R.id.navigation_chat
+            else -> R.id.navigation_timetable
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        navigation.selectedItemId = mTemptID
     }
 }

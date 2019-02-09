@@ -1,10 +1,7 @@
 package com.belyaev.artem.timetablehse_server.utils
 
 import com.belyaev.artem.timetablehse_server.BuildConfig
-import com.belyaev.artem.timetablehse_server.model.ExercisesResponse
-import com.belyaev.artem.timetablehse_server.model.Login
-import com.belyaev.artem.timetablehse_server.model.LoginResponse
-import com.belyaev.artem.timetablehse_server.model.TeachersResponse
+import com.belyaev.artem.timetablehse_server.model.*
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -27,8 +24,14 @@ interface ApiTimeTable {
     @GET("api/teachers")
     fun getTeachers(): Observable<TeachersResponse>
 
+    @GET("api/groups")
+    fun getGroups(): Observable<GroupsResponse>
+
     @POST("login")
     fun login(@Body login: Login): Observable<LoginResponse>
+
+    @POST("register")
+    fun register(@Body register: Register): Observable<RegisterResponse>
 
     companion object {
 

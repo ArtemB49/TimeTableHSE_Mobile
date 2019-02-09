@@ -1,15 +1,23 @@
 package com.belyaev.artem.timetablehse_server.controller.authorization
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
+import android.support.v4.app.ListFragment
+import android.util.Log
+import android.view.KeyEvent
 import com.belyaev.artem.timetablehse_server.R
+import com.belyaev.artem.timetablehse_server.controller.navigation_activity.NavigationActivity
 import com.belyaev.artem.timetablehse_server.model.Login
 import com.belyaev.artem.timetablehse_server.model.LoginResponse
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_teacher.*
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -17,15 +25,25 @@ import java.io.IOException
 
 class AuthorizationActivity : AppCompatActivity() {
 
-    private val JSON = MediaType.parse("application/json; charset=utf-8")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authorization)
 
-        logout()
-        loginByClient()
+        loadFragment(LoginFragment())
     }
+
+    fun loadFragment(fragment: Fragment?): Boolean{
+        if (fragment != null){
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+            return true
+        }
+        return false
+    }
+
+
 
     private fun logout(){
         val client = OkHttpClient()
@@ -57,61 +75,20 @@ class AuthorizationActivity : AppCompatActivity() {
         })
     }
 
-    @SuppressLint("CheckResult")
-    private fun loginByRetrofit(){
+    override fun onBackPressed() {
+        moveTaskToBack(false)
+        setResult(201, Intent(this, NavigationActivity::class.java))
+        finish()
+    }
 
-        val apiTimeTable = ApiTimeTable.getApi()
-
-        val call = apiTimeTable.login(Login("admin", "a"))
-
-        call
-            .subscribeOn(Schedulers.io())
-            .unsubscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response: LoginResponse? ->
-                println(response?.token)
-                println(response?.user_id)
-
-            }, {
-                println(it.message)
-            })
-
+    fun successfulyRegistration(){
+        Snackbar.make(content, "Успешная регистрация", Snackbar.LENGTH_LONG).show()
+        loadFragment(LoginFragment())
     }
 
 
-    private fun loginByClient(){
-        val client = OkHttpClient()
-
-        val formBody = FormBody.Builder()
-            .add("username", "admin")
-            .add("password", "a")
-            .build()
-        val request = Request.Builder()
-            .url(Constants.SERVICE_HOST.value)
-            .get()
-            .build()
 
 
 
 
-        client.newCall(request).enqueue(object: Callback{
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseData = response.body().toString()
-                try {
-                    val json = JSONObject(responseData)
-                    println("Auth request successful!")
-                    println(json)
-                } catch (e: JSONException){
-                    e.printStackTrace()
-                }
-
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                println("Auth request onFailure!")
-            }
-
-        })
-    }
 }

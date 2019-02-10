@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import com.belyaev.artem.timetablehse_server.MainApplication
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.adapter.ChatAdapter
 import com.belyaev.artem.timetablehse_server.model.Message
+import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -29,6 +29,7 @@ class ChatFragment : Fragment() {
     private lateinit var mMessagesAdapter: ChatAdapter
     private val mMessages: MutableList<Message> = mutableListOf()
     private var mSocket: Socket? = null
+    private var mUserID: Int = 0
     private var isConnected = true
     private var isNeedHistory = true
 
@@ -40,9 +41,13 @@ class ChatFragment : Fragment() {
     ): View? {
 
         mMainView = inflater.inflate(R.layout.fragment_chat, container, false)
-        val mSocket = MainApplication.mSocket
 
-        if (mSocket == null) return null
+        val sharedPreferences = activity?.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
+        mUserID = sharedPreferences?.getInt("user_id", 1)!!
+
+        val mSocket = (MainApplication.mSocket) ?: return null
+
+
         mSocket.on(Socket.EVENT_CONNECT, onConnect)
         mSocket.on("history", onHistory)
         mSocket.on("message", onMessage)
@@ -55,7 +60,7 @@ class ChatFragment : Fragment() {
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
-        mMessagesAdapter = ChatAdapter(mMessages)
+        mMessagesAdapter = ChatAdapter(mMessages, mUserID)
         mRecyclerView.adapter = mMessagesAdapter
 
         return mMainView
@@ -69,11 +74,18 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private fun enterRoom(){
+
+        mSocket = MainApplication.mSocket
+        mSocket?.emit("enterRoom", 1)
+    }
+
 
     private val onConnect: Emitter.Listener = Emitter.Listener {
         activity?.run {
             if (isConnected){
                 getHistory()
+                enterRoom()
             }
         }
     }
@@ -106,16 +118,20 @@ class ChatFragment : Fragment() {
 
     private fun sendMessage(message: Message){
         mSocket = MainApplication.mSocket
-        mSocket?.emit("msg", JSONObject("" +
+        mSocket?.emit(
+            "msg",
+            1,
+            JSONObject("" +
                 "{" +
-                    "username: \"${message.userName}\"," +
+                    "email: \"${message.email}\"," +
                     "user_id: ${message.userID}," +
                     "content: \"${message.content}\"" +
                 "}"))
     }
 
     private val onClickSendMessage = View.OnClickListener {
-        val message = Message(1, edittext_chatbox.text.toString(), 1, "Artem", Date())
+
+        val message = Message(1, edittext_chatbox.text.toString(), mUserID, "Artem@ya.ru", Date())
         edittext_chatbox.text.clear()
         sendMessage(message)
     }

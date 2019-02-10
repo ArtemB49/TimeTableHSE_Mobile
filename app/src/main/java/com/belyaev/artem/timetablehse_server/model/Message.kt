@@ -8,7 +8,7 @@ class Message (
     var id: Int = 1,
     var content: String? = "",
     var userID: Int? = 1,
-    var userName: String? = "",
+    var email: String? = "",
     var date: Date = Date(),
     private var stringDate: String = ""
 )
@@ -17,7 +17,7 @@ class Message (
         id = 1
         content = jsonObject["content"] as String?
         userID = jsonObject["user_id"] as Int?
-        userName = jsonObject["username"] as String?
+        email = jsonObject["email"] as String?
         stringDate = jsonObject["date"] as String
         date = parseDate(stringDate)
 

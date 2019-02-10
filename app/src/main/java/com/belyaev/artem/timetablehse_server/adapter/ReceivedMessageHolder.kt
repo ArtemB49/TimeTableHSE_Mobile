@@ -1,6 +1,5 @@
 package com.belyaev.artem.timetablehse_server.adapter
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
@@ -33,7 +32,7 @@ class ReceivedMessageHolder (itemView: View):
         mainView.text_message_time.text = stringDate
 
         mainView.text_message_body.text = message.content
-        mainView.text_message_name.text = message.userName
+        mainView.text_message_name.text = message.email
 
 
     }

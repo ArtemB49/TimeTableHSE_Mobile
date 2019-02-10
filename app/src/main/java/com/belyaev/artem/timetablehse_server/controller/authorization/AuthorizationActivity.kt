@@ -17,6 +17,7 @@ import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_authorization.*
 import kotlinx.android.synthetic.main.fragment_teacher.*
 import okhttp3.*
 import org.json.JSONException
@@ -82,7 +83,7 @@ class AuthorizationActivity : AppCompatActivity() {
     }
 
     fun successfulyRegistration(){
-        Snackbar.make(content, "Успешная регистрация", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(root_layout, "Успешная регистрация", Snackbar.LENGTH_LONG).show()
         loadFragment(LoginFragment())
     }
 

@@ -4,10 +4,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.model.Message
+import com.belyaev.artem.timetablehse_server.utils.Constants
 import com.belyaev.artem.timetablehse_server.utils.extention.inflate
 
 
-class ChatAdapter(private val messages: MutableList<Message>):
+class ChatAdapter(private val messages: MutableList<Message>, private val userID: Int):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     private val VIEW_TYPE_MESSAGE_SENT = 1
@@ -22,7 +23,7 @@ class ChatAdapter(private val messages: MutableList<Message>):
     override fun getItemViewType(position: Int): Int {
         val message = messages[position]
 
-        return when (message.userID == userIDPlaceholder){
+        return when (message.userID == userID){
             true -> VIEW_TYPE_MESSAGE_SENT
             false -> VIEW_TYPE_MESSAGE_RECEIVED
         }

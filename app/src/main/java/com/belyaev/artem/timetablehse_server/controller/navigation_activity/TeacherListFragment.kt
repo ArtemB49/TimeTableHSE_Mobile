@@ -17,7 +17,7 @@ import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.classies_recycler_fragment.*
+import kotlinx.android.synthetic.main.fragment_exercises.*
 
 /**
  * A fragment representing a list of Items.

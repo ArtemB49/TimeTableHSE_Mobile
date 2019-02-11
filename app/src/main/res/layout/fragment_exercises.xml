@@ -5,6 +5,13 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               tools:context=".controller.navigation_activity.ExercisesRecyclerListFragment">
+    <Spinner
+            android:id="@+id/spinner_group_ex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:visibility="gone"
+    />
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"

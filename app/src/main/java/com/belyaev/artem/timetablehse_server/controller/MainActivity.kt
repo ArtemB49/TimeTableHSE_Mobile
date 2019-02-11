@@ -33,7 +33,7 @@ class MainActivity : ListActivity() {
 
         when (callType) {
             1 -> {
-                val call = apiTimeTable.getExercisesByGroupID()
+                val call = apiTimeTable.getExercisesByGroupID(1)
                 call
                     .subscribeOn(Schedulers.io())
                     .unsubscribeOn(Schedulers.computation())

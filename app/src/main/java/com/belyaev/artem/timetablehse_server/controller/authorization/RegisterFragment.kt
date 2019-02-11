@@ -24,7 +24,7 @@ class RegisterFragment: Fragment() {
     private lateinit var mActivity: AuthorizationActivity
     private lateinit var mSpinner: Spinner
 
-    private var groupID: Int = 1
+    private var groupID: Int = 0
     private var spinnerGroups: ArrayList<Group>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -93,6 +93,7 @@ class RegisterFragment: Fragment() {
                     for (i in 0 until it.groups.size) {
                         items.add(it.groups[i].name)
                     }
+                    groupID = it.groups[0].id
                     mActivity.runOnUiThread{
                         mSpinner.adapter = ArrayAdapter(mActivity, android.R.layout.simple_spinner_dropdown_item, items)
                     }

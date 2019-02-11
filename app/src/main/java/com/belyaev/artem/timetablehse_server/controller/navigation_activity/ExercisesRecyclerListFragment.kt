@@ -1,6 +1,6 @@
 package com.belyaev.artem.timetablehse_server.controller.navigation_activity
 
-import android.content.IntentFilter
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -9,19 +9,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
 
 import com.belyaev.artem.timetablehse_server.adapter.ExercisesRecyclerAdapter
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
-import com.belyaev.artem.timetablehse_server.model.ClassParcelable
 import com.belyaev.artem.timetablehse_server.model.Exercise
+import com.belyaev.artem.timetablehse_server.model.Group
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import com.belyaev.artem.timetablehse_server.utils.ExerciseCallType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.classies_recycler_fragment.*
+import kotlinx.android.synthetic.main.fragment_exercises.*
 import kotlin.collections.ArrayList
 
 class ExercisesRecyclerListFragment : Fragment()  {
@@ -32,6 +35,9 @@ class ExercisesRecyclerListFragment : Fragment()  {
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mMainView: View
     private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mSpinner: Spinner
+    private var mSpinnerGroups: ArrayList<Group>? = null
+    private var mGroupID = -1
     private var isSection: Boolean = false
 
     private val lastVisibleItemPositiom: Int
@@ -40,18 +46,21 @@ class ExercisesRecyclerListFragment : Fragment()  {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-        mMainView = inflater.inflate(R.layout.classies_recycler_fragment , container, false)
+        mMainView = inflater.inflate(R.layout.fragment_exercises , container, false)
 
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
 
+
+        when (exerciseCallType){
+            ExerciseCallType.BY_GROUP -> getExercisesByGroup()
+            ExerciseCallType.BY_TEACHER -> callWebService(exerciseCallType, 0)
+        }
+
         Log.d("FUN","ExercisesRecyclerListFragment.onCreateView")
 
-
-        callWebService(exerciseCallType)
         setRecyclerViewScrollListener()
-
 
         return mMainView
     }
@@ -74,13 +83,28 @@ class ExercisesRecyclerListFragment : Fragment()  {
         }
     }
 
-    private fun callWebService(exerciseCallType: ExerciseCallType){
+    private fun getExercisesByGroup(){
+        val sharedPreferences = activity?.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
+        if (sharedPreferences != null) {
+            mGroupID = sharedPreferences.getInt("group_id", -1)
+        }
+
+        if (mGroupID == -1){
+            mSpinner = mMainView.findViewById(R.id.spinner_group_ex)
+            mSpinner.onItemSelectedListener = spinnerItemSelected
+            getAdapter()
+        } else {
+            callWebService(exerciseCallType, mGroupID)
+        }
+    }
+
+    private fun callWebService(exerciseCallType: ExerciseCallType, groupID: Int){
 
         val apiTimeTable = ApiTimeTable.getApi()
 
         when (exerciseCallType) {
             ExerciseCallType.BY_GROUP -> {
-                val call = apiTimeTable.getExercisesByGroupID()
+                val call = apiTimeTable.getExercisesByGroupID(groupID)
                 call
                     .subscribeOn(Schedulers.io())
                     .unsubscribeOn(Schedulers.computation())
@@ -113,11 +137,48 @@ class ExercisesRecyclerListFragment : Fragment()  {
                     })
             }
         }
+    }
 
 
 
+    @SuppressLint("CheckResult")
+    fun getAdapter() {
+        val apiTimeTable = ApiTimeTable.getApi()
+        val call = apiTimeTable.getGroups()
+        call
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.computation())
+            .observeOn(Schedulers.io())
+            .subscribe ({
+                if (it.groups != null) {
+                    mSpinnerGroups = it.groups
+                    val items = mutableListOf<String>()
+                    for (i in 0 until it.groups.size) {
+                        items.add(it.groups[i].name)
+                    }
+                    mGroupID = it.groups[0].id
+                    callWebService(exerciseCallType, mGroupID)
+                    activity?.runOnUiThread{
+                        mSpinner.adapter = ArrayAdapter(activity, android.R.layout.simple_spinner_dropdown_item, items)
+                        mSpinner.visibility = View.VISIBLE
+                    }
+                } else {
+                    Log.d("ERROR", "Groups load error")
+                }
 
+            }, {
+                Toast.makeText(activity?.applicationContext, it.message, Toast.LENGTH_SHORT).show()
+            })
+    }
 
+    private val spinnerItemSelected: AdapterView.OnItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            val groups = mSpinnerGroups ?: return
+            mGroupID = groups[position].id
+            callWebService(exerciseCallType, mGroupID)
+        }
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
     }
 
     private fun setRecyclerViewScrollListener() {

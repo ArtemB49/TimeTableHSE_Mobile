@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MenuItem
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.authorization.AuthorizationActivity
+import com.belyaev.artem.timetablehse_server.controller.notification_service.NotificationService
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.Teacher
 import com.belyaev.artem.timetablehse_server.model.TeacherParcelable
@@ -24,6 +25,7 @@ class NavigationActivity : AppCompatActivity() ,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
+        startNotificationService()
         navigation.setOnNavigationItemSelectedListener(this)
         loadFragment(ExercisesRecyclerListFragment())
 
@@ -94,5 +96,9 @@ class NavigationActivity : AppCompatActivity() ,
     override fun onResume() {
         super.onResume()
         navigation.selectedItemId = mTemptID
+    }
+
+    private fun startNotificationService(){
+        startService(Intent(applicationContext, NotificationService::class.java))
     }
 }

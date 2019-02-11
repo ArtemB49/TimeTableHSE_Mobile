@@ -12,6 +12,7 @@ import com.belyaev.artem.timetablehse_server.MainApplication
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.adapter.ChatAdapter
 import com.belyaev.artem.timetablehse_server.model.Message
+import com.belyaev.artem.timetablehse_server.model.User
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -29,8 +30,7 @@ class ChatFragment : Fragment() {
     private lateinit var mMessagesAdapter: ChatAdapter
     private val mMessages: MutableList<Message> = mutableListOf()
     private var mSocket: Socket? = null
-    private var mUserID: Int = 0
-    private var mGroupID: Int = 0
+    private lateinit var mUser: User
     private var isConnected = true
     private var isNeedHistory = true
 
@@ -42,10 +42,14 @@ class ChatFragment : Fragment() {
     ): View? {
 
         mMainView = inflater.inflate(R.layout.fragment_chat, container, false)
-
+        mUser = User()
         val sharedPreferences = activity?.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
-        mUserID = sharedPreferences?.getInt("user_id", 1)!!
-        mGroupID = sharedPreferences?.getInt("group_id", 1)!!
+        if (sharedPreferences != null){
+            mUser.userID = sharedPreferences.getInt("user_id", 1)
+            mUser.email = sharedPreferences.getString("email", "email@email.ru")
+            mUser.groupID = sharedPreferences.getInt("group_id", 1)
+        }
+
 
         val mSocket = (MainApplication.mSocket) ?: return null
 
@@ -62,7 +66,7 @@ class ChatFragment : Fragment() {
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
-        mMessagesAdapter = ChatAdapter(mMessages, mUserID)
+        mMessagesAdapter = ChatAdapter(mMessages, mUser.userID)
         mRecyclerView.adapter = mMessagesAdapter
 
         return mMainView
@@ -71,39 +75,41 @@ class ChatFragment : Fragment() {
     private fun getHistory(){
         if (isNeedHistory){
             mSocket = MainApplication.mSocket
-            mSocket?.emit("receiveHistory", mGroupID)
-            isNeedHistory = false
+            mSocket?.emit("receiveHistory", mUser.groupID)
         }
     }
 
     private fun enterRoom(){
 
         mSocket = MainApplication.mSocket
-        mSocket?.emit("enterRoom", mGroupID)
+        mSocket?.emit("enterRoom", mUser.groupID)
     }
 
 
     private val onConnect: Emitter.Listener = Emitter.Listener {
         activity?.run {
             if (isConnected){
-                getHistory()
                 enterRoom()
+                getHistory()
+
             }
         }
     }
 
     private val onHistory: Emitter.Listener = Emitter.Listener {
         activity?.run {
-            val messagesJson = it[0] as JSONArray
-            for (i in 0..messagesJson.length()-1) {
-                val message = Message(messagesJson[i] as JSONObject)
-                mMessages.add(message)
+            if(isNeedHistory){
+                isNeedHistory = false
+                val messagesJson = it[0] as JSONArray
+                for (i in 0..messagesJson.length()-1) {
+                    val message = Message(messagesJson[i] as JSONObject)
+                    mMessages.add(message)
+                }
+                mMessages.sortBy{selector(it)}
+                activity?.runOnUiThread {
+                    mMessagesAdapter.notifyDataSetChanged()
+                }
             }
-            mMessages.sortBy{selector(it)}
-            activity?.runOnUiThread {
-                mMessagesAdapter.notifyDataSetChanged()
-            }
-
         }
     }
 
@@ -122,7 +128,7 @@ class ChatFragment : Fragment() {
         mSocket = MainApplication.mSocket
         mSocket?.emit(
             "msg",
-            mGroupID,
+            mUser.groupID,
             JSONObject("" +
                 "{" +
                     "email: \"${message.email}\"," +
@@ -133,7 +139,7 @@ class ChatFragment : Fragment() {
 
     private val onClickSendMessage = View.OnClickListener {
 
-        val message = Message(1, edittext_chatbox.text.toString(), mUserID, "Artem@ya.ru", Date())
+        val message = Message(1, edittext_chatbox.text.toString(), mUser.userID, mUser.email, Date())
         edittext_chatbox.text.clear()
         sendMessage(message)
     }

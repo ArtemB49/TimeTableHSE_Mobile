@@ -16,8 +16,8 @@ import retrofit2.http.Path
 
 interface ApiTimeTable {
 
-    @GET("api/classies/1")
-    fun getExercisesByGroupID(): Observable<ExercisesResponse>
+    @GET("api/classies/{group_id}")
+    fun getExercisesByGroupID(@Path("group_id") groupID: Int): Observable<ExercisesResponse>
 
     @GET("api/teachers/{teacher_id}")
     fun getExercisesByTeacherID(@Path("teacher_id") teacherID: Int): Observable<ExercisesResponse>

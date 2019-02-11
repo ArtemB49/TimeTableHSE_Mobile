@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.belyaev.artem.timetablehse_server.R
+
 import com.belyaev.artem.timetablehse_server.adapter.ExercisesRecyclerAdapter
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.ClassParcelable
@@ -24,10 +25,6 @@ import kotlinx.android.synthetic.main.classies_recycler_fragment.*
 import kotlin.collections.ArrayList
 
 class ExercisesRecyclerListFragment : Fragment()  {
-
-    //private val asyDate = AsyDateFormatter.instance
-    //private val mRealm = Realm.getDefaultInstance()
-    //private val mAsyService = AsyService.instance
 
     var exerciseCallType: ExerciseCallType = ExerciseCallType.BY_GROUP
 
@@ -43,7 +40,7 @@ class ExercisesRecyclerListFragment : Fragment()  {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-        mMainView = inflater.inflate(R.layout.classies_recycler_fragment, container, false)
+        mMainView = inflater.inflate(R.layout.classies_recycler_fragment , container, false)
 
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)

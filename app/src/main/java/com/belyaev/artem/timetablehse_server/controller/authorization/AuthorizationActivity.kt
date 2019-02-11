@@ -13,6 +13,8 @@ import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.navigation_activity.NavigationActivity
 import com.belyaev.artem.timetablehse_server.model.Login
 import com.belyaev.artem.timetablehse_server.model.LoginResponse
+import com.belyaev.artem.timetablehse_server.model.Register
+import com.belyaev.artem.timetablehse_server.model.RegisterResponse
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -86,9 +88,6 @@ class AuthorizationActivity : AppCompatActivity() {
         Snackbar.make(root_layout, "Успешная регистрация", Snackbar.LENGTH_LONG).show()
         loadFragment(LoginFragment())
     }
-
-
-
 
 
 

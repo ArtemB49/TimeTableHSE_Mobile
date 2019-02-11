@@ -2,6 +2,7 @@ package com.belyaev.artem.timetablehse_server.utils
 
 import com.belyaev.artem.timetablehse_server.BuildConfig
 import com.belyaev.artem.timetablehse_server.model.*
+import com.belyaev.artem.timetablehse_server.model.response.UserResponse
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,6 +33,9 @@ interface ApiTimeTable {
 
     @POST("register")
     fun register(@Body register: Register): Observable<RegisterResponse>
+
+    @GET("api/users/{user_id}")
+    fun getUser(@Path("user_id") userID: Int): Observable<UserResponse>
 
     companion object {
 

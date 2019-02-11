@@ -30,6 +30,7 @@ class ChatFragment : Fragment() {
     private val mMessages: MutableList<Message> = mutableListOf()
     private var mSocket: Socket? = null
     private var mUserID: Int = 0
+    private var mGroupID: Int = 0
     private var isConnected = true
     private var isNeedHistory = true
 
@@ -44,6 +45,7 @@ class ChatFragment : Fragment() {
 
         val sharedPreferences = activity?.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
         mUserID = sharedPreferences?.getInt("user_id", 1)!!
+        mGroupID = sharedPreferences?.getInt("group_id", 1)!!
 
         val mSocket = (MainApplication.mSocket) ?: return null
 
@@ -69,7 +71,7 @@ class ChatFragment : Fragment() {
     private fun getHistory(){
         if (isNeedHistory){
             mSocket = MainApplication.mSocket
-            mSocket?.emit("receiveHistory", 1)
+            mSocket?.emit("receiveHistory", mGroupID)
             isNeedHistory = false
         }
     }
@@ -77,7 +79,7 @@ class ChatFragment : Fragment() {
     private fun enterRoom(){
 
         mSocket = MainApplication.mSocket
-        mSocket?.emit("enterRoom", 1)
+        mSocket?.emit("enterRoom", mGroupID)
     }
 
 
@@ -120,7 +122,7 @@ class ChatFragment : Fragment() {
         mSocket = MainApplication.mSocket
         mSocket?.emit(
             "msg",
-            1,
+            mGroupID,
             JSONObject("" +
                 "{" +
                     "email: \"${message.email}\"," +

@@ -11,10 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.navigation_activity.NavigationActivity
-import com.belyaev.artem.timetablehse_server.model.Login
-import com.belyaev.artem.timetablehse_server.model.LoginResponse
-import com.belyaev.artem.timetablehse_server.model.Register
-import com.belyaev.artem.timetablehse_server.model.RegisterResponse
+import com.belyaev.artem.timetablehse_server.model.*
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,6 +24,9 @@ class RegisterFragment: Fragment() {
     private lateinit var mActivity: AuthorizationActivity
     private lateinit var mSpinner: Spinner
 
+    private var groupID: Int = 1
+    private var spinnerGroups: ArrayList<Group>? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mActivity = activity as AuthorizationActivity
         mMainView = inflater.inflate(R.layout.fragment_register, container, false)
@@ -38,6 +38,7 @@ class RegisterFragment: Fragment() {
         registerButton.setOnClickListener(registerClickListener)
 
         mSpinner = mMainView.findViewById(R.id.spinner_group)
+        mSpinner.onItemSelectedListener = spinnerItemSelected
         getAdapter()
 
         return mMainView
@@ -54,7 +55,7 @@ class RegisterFragment: Fragment() {
         val firstName = edt_firstname.text.toString()
         val lastName = edt_lastname.text.toString()
         val thirdName = edt_thirdname.text.toString()
-        register(Register(email, firstName, lastName, thirdName, password, 2, 1))
+        register(Register(email, firstName, lastName, thirdName, password, 2, groupID))
     }
 
     @SuppressLint("CheckResult")
@@ -87,8 +88,9 @@ class RegisterFragment: Fragment() {
             .observeOn(Schedulers.io())
             .subscribe ({
                 if (it.groups != null) {
+                    spinnerGroups = it.groups
                     val items = mutableListOf<String>()
-                    for (i in 0..it.groups.size-1) {
+                    for (i in 0 until it.groups.size) {
                         items.add(it.groups[i].name)
                     }
                     mActivity.runOnUiThread{
@@ -101,6 +103,17 @@ class RegisterFragment: Fragment() {
             }, {
                 Toast.makeText(activity?.applicationContext, it.message, Toast.LENGTH_SHORT).show()
             })
+    }
+
+    private val spinnerItemSelected: AdapterView.OnItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            val groups = spinnerGroups ?: return
+            groupID = groups[position].id
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
     }
 
 }

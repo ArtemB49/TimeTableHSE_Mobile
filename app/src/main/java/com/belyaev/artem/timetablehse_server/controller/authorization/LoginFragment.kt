@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.navigation_activity.NavigationActivity
-import com.belyaev.artem.timetablehse_server.model.Login
-import com.belyaev.artem.timetablehse_server.model.LoginResponse
+import com.belyaev.artem.timetablehse_server.model.*
+import com.belyaev.artem.timetablehse_server.model.response.UserResponse
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -61,11 +61,7 @@ class LoginFragment: Fragment() {
             .subscribe({ response: LoginResponse? ->
 
                 if (response?.user_id != null){
-                    val intent = Intent(mActivity, NavigationActivity::class.java)
-                    val sharedPreferences = mActivity.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
-                    sharedPreferences.edit().putInt("user_id", response.user_id).apply()
-                    mActivity.setResult(200, intent)
-                    mActivity.finish()
+                    getUserData(response.user_id)
                 }
             }, {
                 showFailureText()
@@ -76,6 +72,45 @@ class LoginFragment: Fragment() {
     // Показать текст если ошибка авторизации
     private fun showFailureText(){
         failure_text.visibility = View.VISIBLE
+    }
+
+    @SuppressLint("CheckResult")
+    private fun getUserData(userID: Int) {
+        val apiTimeTable = ApiTimeTable.getApi()
+
+        val call = apiTimeTable.getUser(userID)
+
+        call
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.computation())
+            .observeOn(Schedulers.io())
+            .subscribe({ response: UserResponse? ->
+
+                if (response?.user != null) {
+                    saveUserData(response.user)
+                }
+            }, {
+
+            })
+    }
+
+    private fun saveUserData(user: User){
+        val intent = Intent(mActivity, NavigationActivity::class.java)
+        val sharedPreferences = mActivity.getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
+        sharedPreferences.edit()
+            .putInt("user_id", user.userID)
+            .putString("fname", user.firstName)
+            .putString("lname", user.lastName)
+            .putString("tname", user.thirdName)
+            .putString("email", user.email)
+            .putInt("group_id", user.groupID)
+            .apply()
+
+        mActivity.runOnUiThread {
+            mActivity.setResult(200, intent)
+            mActivity.finish()
+        }
+
     }
 
 }

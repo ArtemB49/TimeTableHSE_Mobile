@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.controller.navigation_activity.NavigationActivity
 import com.belyaev.artem.timetablehse_server.model.*
@@ -22,7 +23,7 @@ class LoginFragment: Fragment() {
 
     private lateinit var mMainView: View
     private lateinit var mActivity: AuthorizationActivity
-
+    private lateinit var mFailTextViw: TextView
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mActivity = activity as AuthorizationActivity
         mMainView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -32,6 +33,8 @@ class LoginFragment: Fragment() {
 
         val registerButton: Button = mMainView.findViewById(R.id.button_reg)
         registerButton.setOnClickListener(registerClickListener)
+
+        mFailTextViw = mMainView.findViewById(R.id.failure_text)
 
         return mMainView
     }
@@ -71,7 +74,10 @@ class LoginFragment: Fragment() {
 
     // Показать текст если ошибка авторизации
     private fun showFailureText(){
-        failure_text.visibility = View.VISIBLE
+        activity?.runOnUiThread {
+            mFailTextViw.visibility = View.VISIBLE
+        }
+
     }
 
     @SuppressLint("CheckResult")

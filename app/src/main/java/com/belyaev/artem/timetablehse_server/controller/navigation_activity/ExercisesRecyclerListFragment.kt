@@ -18,12 +18,18 @@ import com.belyaev.artem.timetablehse_server.R
 import com.belyaev.artem.timetablehse_server.adapter.ExercisesRecyclerAdapter
 import com.belyaev.artem.timetablehse_server.controller.teacher_tab_activity.TeacherTabActivity
 import com.belyaev.artem.timetablehse_server.model.Exercise
+import com.belyaev.artem.timetablehse_server.model.ExerciseRealm
 import com.belyaev.artem.timetablehse_server.model.Group
 import com.belyaev.artem.timetablehse_server.utils.ApiTimeTable
 import com.belyaev.artem.timetablehse_server.utils.Constants
 import com.belyaev.artem.timetablehse_server.utils.ExerciseCallType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
+import io.realm.RealmList
+import io.realm.RealmQuery
+import io.realm.RealmResults
+import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.fragment_exercises.*
 import kotlin.collections.ArrayList
 
@@ -52,6 +58,7 @@ class ExercisesRecyclerListFragment : Fragment()  {
         mRecyclerView = mMainView.findViewById(R.id.recyclerView)
         mRecyclerView.layoutManager = mLayoutManager
 
+        //loadWithRealm()
 
         when (exerciseCallType){
             ExerciseCallType.BY_GROUP -> getExercisesByGroup()
@@ -63,6 +70,45 @@ class ExercisesRecyclerListFragment : Fragment()  {
         setRecyclerViewScrollListener()
 
         return mMainView
+    }
+
+    @SuppressLint("CheckResult")
+    private fun loadWithRealm() {
+        val realm = Realm.getDefaultInstance()
+        val exercisesRealm: RealmResults<ExerciseRealm>? = realm.where(ExerciseRealm::class.java).findAll()
+        val list: ArrayList<Exercise> = arrayListOf()
+        for (i in exercisesRealm!!){
+            var exercise = Exercise()
+            exercise.id = i.id
+            exercise.date = i.date
+            exercise.lesson =i.lesson
+            exercise.teacher = i.teacher
+            exercise.time = i.time
+            list.add(exercise)
+        }
+        updateUI(list)
+
+        val apiTimeTable = ApiTimeTable.getApi()
+        val call = apiTimeTable.getExercisesRealmByGroupID(1)
+        call
+            .subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe ({
+                if (it.exercises != null){
+                    val exercises = it.exercises!!
+                    for (i in 0 until exercises.size){
+                        val exercise = exercises[i]
+                        realm.beginTransaction()
+                        realm.copyToRealmOrUpdate(exercise)
+                        realm.commitTransaction()
+                    }
+                }
+
+            },{
+
+            })
+
     }
 
     private fun updateUI(list: ArrayList<Exercise>?){

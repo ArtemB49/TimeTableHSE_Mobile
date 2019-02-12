@@ -1,17 +1,35 @@
 package com.belyaev.artem.timetablehse_server.model
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+import io.realm.annotations.RealmClass
 import java.util.*
 
+@RealmClass
+open class ExerciseRealm : RealmObject(){
+    @PrimaryKey
+    @SerializedName("id")
+    @Expose
+    open var id: Int = 0
 
-open class ExerciseRealm(
-    open var id: Int = 0,
-    open var lesson: Lesson = Lesson(),
-    open var teacher: Teacher = Teacher(),
-    open var date: Date = Date(),
-    open var time: String = ""
+    @SerializedName("lesson")
+    @Expose
+    open var lesson: String? = null
 
-) : RealmObject()
+    @SerializedName("teacher")
+    @Expose
+    open var teacher: String? = null
+
+    @SerializedName("date")
+    @Expose
+    open var date: String? = null
+
+    @SerializedName("time")
+    @Expose
+    open var time: String? = null
+}
 
 
 

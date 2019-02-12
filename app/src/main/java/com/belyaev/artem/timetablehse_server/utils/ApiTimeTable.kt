@@ -3,7 +3,11 @@ package com.belyaev.artem.timetablehse_server.utils
 import com.belyaev.artem.timetablehse_server.BuildConfig
 import com.belyaev.artem.timetablehse_server.model.*
 import com.belyaev.artem.timetablehse_server.model.response.UserResponse
+import com.google.gson.ExclusionStrategy
+import com.google.gson.FieldAttributes
+import com.google.gson.GsonBuilder
 import io.reactivex.Observable
+import io.realm.RealmObject
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,6 +22,9 @@ interface ApiTimeTable {
 
     @GET("api/classies/{group_id}")
     fun getExercisesByGroupID(@Path("group_id") groupID: Int): Observable<ExercisesResponse>
+
+    @GET("api/exercises/{group_id}")
+    fun getExercisesRealmByGroupID(@Path("group_id") groupID: Int): Observable<ExercisesRealmResponse>
 
     @GET("api/teachers/{teacher_id}")
     fun getExercisesByTeacherID(@Path("teacher_id") teacherID: Int): Observable<ExercisesResponse>
@@ -42,7 +49,7 @@ interface ApiTimeTable {
         fun getApi(): ApiTimeTable   {
             return Retrofit.Builder()
                 .baseUrl(Constants.SERVICE_HOST.value)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(getClient())
                 .build()
@@ -58,5 +65,15 @@ interface ApiTimeTable {
             }
             return client.build()
         }
+
+        val gson = GsonBuilder().setExclusionStrategies(object: ExclusionStrategy {
+            override fun shouldSkipClass(clazz: Class<*>?): Boolean {
+                return false
+            }
+
+            override fun shouldSkipField(f: FieldAttributes?): Boolean {
+                return f?.declaredClass == RealmObject::class.java
+            }
+        }).create()
     }
 }

@@ -46,11 +46,7 @@ class TeacherTabActivity : AppCompatActivity() {
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
         tabLayout.setupWithViewPager(viewPager)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .show()
-        }
+
 
     }
 
@@ -68,7 +64,7 @@ class TeacherTabActivity : AppCompatActivity() {
         val itemID = item.itemId
 
         when (itemID) {
-            R.id.action_settings -> return true
+
             android.R.id.home -> finish()
         }
 

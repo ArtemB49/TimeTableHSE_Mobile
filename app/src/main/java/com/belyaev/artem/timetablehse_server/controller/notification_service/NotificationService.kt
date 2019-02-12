@@ -15,12 +15,14 @@ import com.belyaev.artem.timetablehse_server.controller.MainActivity
 import android.app.*
 import android.content.Context
 import com.belyaev.artem.timetablehse_server.R
+import com.belyaev.artem.timetablehse_server.utils.Constants
 
 
 class NotificationService: Service() {
 
     private lateinit var notificationManager: NotificationManagerCompat
     private var mSocket: Socket? = null
+    private var mGroupID: Int = -1
 
     override fun onCreate() {
         notificationManager = NotificationManagerCompat.from(this)
@@ -29,6 +31,7 @@ class NotificationService: Service() {
         mSocket.on("notification", onNotification)
         mSocket.connect()
         Log.d("!!NotificationService!!", "START")
+
 
     }
 
@@ -41,7 +44,18 @@ class NotificationService: Service() {
         val data = it[0] as JSONObject
         val groupID = data.getInt("group_id")
 
+        val sharedPreferences = getSharedPreferences(Constants.PREFS_FILENAME.value, 0)
+        if (sharedPreferences != null){
+            mGroupID = sharedPreferences.getInt("group_id", -1)
+        }
+        if (mGroupID == groupID){
+            sendNotification("Расписание НИУ ВШЭ", "Изменения в расписании вашей группы")
+        }
 
+
+    }
+
+    private fun sendNotification(title: String, text: String){
         val NOTIFICATION_ID = 234
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -66,12 +80,12 @@ class NotificationService: Service() {
 
         val builder = NotificationCompat.Builder(this, "my_channel_01")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Group")
-            .setContentText("Exercises")
+            .setContentTitle(title)
+            .setContentText(text)
 
-        val resultIntent = Intent(this, MainActivity::class.java)
+        val resultIntent = Intent(this, NavigationActivity::class.java)
         val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(MainActivity::class.java)
+        stackBuilder.addParentStack(NavigationActivity::class.java)
         stackBuilder.addNextIntent(resultIntent)
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
 
